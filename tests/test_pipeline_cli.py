@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 
 from g4brainatlasdose.cli import main
-from g4brainatlasdose.nifti_io import save_nifti_array
+from g4brainatlasdose.dummy_dose import generate_dummy_dose
+from g4brainatlasdose.nifti_io import load_nifti_array, save_nifti_array
 from g4brainatlasdose.pipeline import run_regional_dose_pipeline
 
 
@@ -76,3 +77,39 @@ def test_cli_uses_default_mvp_paths_and_csv_region_names(tmp_path, monkeypatch, 
         {"region_label": 2, "region_name": "Temporal", "mean_dose": 4.0, "n_voxels": 3},
         {"region_label": 3, "region_name": "Occipital", "mean_dose": 7.0, "n_voxels": 1},
     ]
+
+
+def test_cli_can_generate_dummy_dose_and_qc_report(tmp_path, capsys):
+    _dose_map_path, atlas_labels_path = _write_synthetic_inputs(tmp_path)
+    output_path = tmp_path / "reports" / "regional_dose.csv"
+    qc_report_path = tmp_path / "reports" / "qc_report.md"
+    dummy_dose_path = tmp_path / "outputs" / "dummy_dose.nii.gz"
+
+    exit_code = main(
+        [
+            "--atlas-labels",
+            str(atlas_labels_path),
+            "--dummy-dose",
+            "--dummy-dose-output",
+            str(dummy_dose_path),
+            "--output",
+            str(output_path),
+            "--qc-report",
+            str(qc_report_path),
+        ]
+    )
+
+    assert exit_code == 0
+    assert capsys.readouterr().out == f"{output_path}\n"
+    loaded_atlas_labels, _atlas_affine = load_nifti_array(atlas_labels_path)
+    loaded_dummy_dose, _dummy_affine = load_nifti_array(dummy_dose_path)
+    np.testing.assert_allclose(loaded_dummy_dose, generate_dummy_dose(loaded_atlas_labels))
+
+    loaded_csv = pd.read_csv(output_path, keep_default_na=False)
+    assert loaded_csv["region_label"].tolist() == [1, 2, 3]
+
+    report = qc_report_path.read_text(encoding="utf-8")
+    assert "| Number of regions | 3 |" in report
+    assert "| Total labeled voxels | 6 |" in report
+    assert "| Voxel coverage | 0.750000 (75.00%) |" in report
+    assert f"| Output CSV path | `{output_path}` |" in report

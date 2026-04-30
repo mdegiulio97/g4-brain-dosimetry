@@ -34,8 +34,10 @@ It does not compute dose directly from raw MRI intensities. MRI-derived anatomy 
 
 The first Python MVP provides pure analytics utilities to aggregate a dose map by
 atlas labels and write a regional CSV report. It accepts optional atlas region names
-as a `label -> region_name` mapping. It is demonstrated with small synthetic arrays
-in the test suite and does not require real MRI or Geant4 output data.
+as a `label -> region_name` mapping, can generate a deterministic synthetic dummy
+dose map for smoke runs, and can write a minimal markdown QC report. It is
+demonstrated with small synthetic arrays in the test suite and does not require
+real MRI or Geant4 output data.
 
 The expected report filename is `regional_dose.csv` with columns:
 `region_label`, `region_name`, `mean_dose`, `std_dose`, `max_dose`, `n_voxels`.
@@ -49,6 +51,19 @@ g4brainatlasdose-mvp \
   --atlas-labels atlas_labels.nii.gz \
   --output regional_dose.csv \
   --region-names region_names.csv
+```
+
+For a synthetic smoke run without Geant4 dose output, use `--dummy-dose`. Add
+`--dummy-dose-output` only when you also want the generated dummy dose map written
+as NIfTI:
+
+```bash
+g4brainatlasdose-mvp \
+  --atlas-labels atlas_labels.nii.gz \
+  --dummy-dose \
+  --dummy-dose-output outputs/dummy_dose.nii.gz \
+  --output reports/regional_dose.csv \
+  --qc-report reports/qc_report.md
 ```
 
 ## Repository layout

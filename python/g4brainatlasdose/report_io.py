@@ -16,4 +16,11 @@ def write_regional_dose_csv(regional_dose: pd.DataFrame, output_path: str | Path
     regional_dose.to_csv(path, columns=REGIONAL_DOSE_COLUMNS, index=False)
 
 
-__all__ = ["write_regional_dose_csv"]
+def write_qc_report_markdown(report_markdown: str, output_path: str | Path) -> None:
+    """Write a markdown QC report."""
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(report_markdown, encoding="utf-8")
+
+
+__all__ = ["write_qc_report_markdown", "write_regional_dose_csv"]

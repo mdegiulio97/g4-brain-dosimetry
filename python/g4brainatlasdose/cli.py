@@ -38,6 +38,23 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional JSON or CSV mapping from region labels to names.",
     )
+    parser.add_argument(
+        "--dummy-dose",
+        action="store_true",
+        help="Use a deterministic synthetic dose map generated from atlas labels.",
+    )
+    parser.add_argument(
+        "--dummy-dose-output",
+        type=Path,
+        default=None,
+        help="Optional NIfTI path where the generated dummy dose map is written.",
+    )
+    parser.add_argument(
+        "--qc-report",
+        type=Path,
+        default=None,
+        help="Optional markdown QC report path.",
+    )
     return parser
 
 
@@ -52,6 +69,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             atlas_labels_path=args.atlas_labels,
             output_path=args.output,
             region_names_path=args.region_names,
+            use_dummy_dose=args.dummy_dose,
+            dummy_dose_output_path=args.dummy_dose_output,
+            qc_report_path=args.qc_report,
         )
     except (FileNotFoundError, ValueError) as exc:
         parser.exit(status=2, message=f"error: {exc}\n")
