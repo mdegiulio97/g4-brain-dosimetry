@@ -38,7 +38,12 @@ scripts/    Utility scripts and CLI entry points
 python/     Python package for preprocessing and postprocessing
 geant4/     C++ Geant4 simulation core
 configs/    YAML/JSON configuration files
+manifests/  Small run manifests and reproducibility metadata examples
 tests/      Unit and smoke tests
 data/       Local data folders, mostly ignored by git
 outputs/    Simulation outputs, ignored by git
 reports/    Generated reports, mostly ignored by git
+```
+
+Some local data, output, and report directories are intentionally absent from a fresh
+checkout because large artifacts should not be tracked in git.

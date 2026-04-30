@@ -1,0 +1,36 @@
+run:
+  id: example_mvp_run
+  created_by: manual_example
+  status: planned
+
+software:
+  project: G4BrainAtlasDose
+  version: 0.1.0
+  geant4_version: null
+  python_version: null
+
+configuration:
+  config_file: configs/mvp.example.yaml
+  random_seed: 12345
+
+inputs:
+  phantom_image:
+    path: data/raw/phantom_mni152.nii.gz
+    sha256: null
+  tissue_labels:
+    path: data/derived/tissue_labels.nii.gz
+    sha256: null
+  atlas_labels:
+    path: data/external/harvard_oxford_labels.nii.gz
+    sha256: null
+
+outputs:
+  dose_map:
+    path: outputs/example_mvp_run/dose.nii.gz
+    sha256: null
+  regional_report:
+    path: reports/example_mvp_run/regional_dose.csv
+    sha256: null
+
+notes:
+  - Example manifest only; paths point to expected local artifacts and are not tracked.

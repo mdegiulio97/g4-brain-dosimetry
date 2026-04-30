@@ -1,0 +1,34 @@
+project:
+  name: G4BrainAtlasDose
+  run_id: example_mvp_run
+
+inputs:
+  phantom_image: data/raw/phantom_mni152.nii.gz
+  tissue_labels: data/derived/tissue_labels.nii.gz
+  atlas_labels: data/external/harvard_oxford_labels.nii.gz
+  atlas_lut: data/external/harvard_oxford_lut.tsv
+
+materials:
+  label_map:
+    0: air
+    1: gray_matter
+    2: white_matter
+    3: csf
+    4: skull
+
+simulation:
+  engine: geant4
+  particles: 10000
+  primary:
+    particle: gamma
+    energy_MeV: 6.0
+    direction: [0.0, 0.0, 1.0]
+  scoring:
+    quantity: dose
+    unit: Gy
+
+outputs:
+  directory: outputs/example_mvp_run
+  dose_map: outputs/example_mvp_run/dose.nii.gz
+  regional_report: reports/example_mvp_run/regional_dose.csv
+  manifest: manifests/example_mvp_run.yaml
