@@ -24,7 +24,14 @@ def run_regional_dose_pipeline(
     dummy_dose_output_path: str | Path | None = None,
     qc_report_path: str | Path | None = None,
 ) -> pd.DataFrame:
-    """Load inputs, compute regional dose analytics, and write the CSV report."""
+    """Load inputs, compute regional dose analytics, and write the CSV report.
+
+    Dummy-dose mode is enabled when ``use_dummy_dose=True`` **or** when
+    ``dummy_dose_output_path`` is provided: passing an output path is treated
+    as an implicit request for dummy dose generation, since saving a dummy
+    map only makes sense when one is being generated. ``dose_map_path`` is
+    ignored in dummy mode.
+    """
     atlas_labels, atlas_affine = load_nifti_array(atlas_labels_path)
     should_use_dummy_dose = use_dummy_dose or dummy_dose_output_path is not None
     if should_use_dummy_dose:
