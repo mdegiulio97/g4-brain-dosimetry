@@ -46,7 +46,11 @@ def test_run_regional_dose_pipeline_writes_csv_with_json_region_names(tmp_path):
         region_names_path=region_names_path,
     )
 
-    loaded = pd.read_csv(output_path, keep_default_na=False)
+    loaded = pd.read_csv(
+        output_path,
+        keep_default_na=False,
+        na_values={"std_dose_Gy": [""]},
+    )
     pd.testing.assert_frame_equal(loaded, regional_dose)
     assert loaded[["region_label", "region_name", "mean_dose_Gy", "n_voxels"]].to_dict(
         orient="records"

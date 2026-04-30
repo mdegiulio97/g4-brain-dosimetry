@@ -28,7 +28,10 @@ def compute_regional_dose(
     """Aggregate a dose map by atlas region labels.
 
     Label 0 is treated as background and excluded from the returned table.
-    Missing region names are represented as empty strings.
+    Missing region names are represented as empty strings. The ``std_dose_Gy``
+    column reports the **sample** standard deviation (``ddof=1``) following
+    medical-imaging convention; single-voxel regions get ``NaN`` because the
+    sample standard deviation is undefined for n=1.
     """
     dose_array = np.asarray(dose_map, dtype=float)
     label_array = validate_atlas_label_array(atlas_labels)
@@ -53,7 +56,7 @@ def compute_regional_dose(
                 "region_label": label,
                 "region_name": names.get(label, ""),
                 "mean_dose_Gy": float(np.mean(region_dose)),
-                "std_dose_Gy": float(np.std(region_dose, ddof=0)),
+                "std_dose_Gy": float(np.std(region_dose, ddof=1)) if region_dose.size > 1 else float("nan"),
                 "max_dose_Gy": float(np.max(region_dose)),
                 "n_voxels": int(region_dose.size),
             }

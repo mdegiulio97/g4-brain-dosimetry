@@ -33,6 +33,10 @@ transport, scoring, or exported simulation dose maps.
   labels; it is not a physical dose field.
 - Atlas and dose arrays have the same shape.
 - Region label `0` is background and is excluded from regional dose rows.
+- The `std_dose_Gy` column reports the **sample** standard deviation
+  (`numpy.std(..., ddof=1)`) following medical-imaging convention; regions
+  containing a single voxel get `NaN` because the sample standard deviation
+  is undefined for `n=1`.
 - The package version is read from installed package metadata when available,
   with `pyproject.toml` used as a source-tree fallback.
 

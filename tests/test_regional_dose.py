@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -35,7 +37,7 @@ def test_compute_regional_dose_aggregates_non_background_labels():
             "region_label": 1,
             "region_name": "",
             "mean_dose_Gy": 1.5,
-            "std_dose_Gy": 0.5,
+            "std_dose_Gy": math.sqrt(0.5),
             "max_dose_Gy": 2.0,
             "n_voxels": 2,
         },
@@ -43,7 +45,7 @@ def test_compute_regional_dose_aggregates_non_background_labels():
             "region_label": 2,
             "region_name": "",
             "mean_dose_Gy": 3.5,
-            "std_dose_Gy": 0.5,
+            "std_dose_Gy": math.sqrt(0.5),
             "max_dose_Gy": 4.0,
             "n_voxels": 2,
         },
@@ -116,6 +118,16 @@ def test_compute_regional_dose_omits_labels_absent_from_atlas():
 
     assert regional_dose["region_label"].tolist() == [1, 2]
     assert "Empty" not in regional_dose["region_name"].tolist()
+
+
+def test_compute_regional_dose_returns_nan_std_for_single_voxel_regions():
+    dose_map = np.array([[[10.0, 20.0]]], dtype=np.float32)
+    atlas_labels = np.array([[[1, 2]]], dtype=np.int16)
+
+    regional_dose = compute_regional_dose(dose_map, atlas_labels)
+
+    assert math.isnan(regional_dose.loc[0, "std_dose_Gy"])
+    assert math.isnan(regional_dose.loc[1, "std_dose_Gy"])
 
 
 def test_write_regional_dose_csv_writes_expected_file(tmp_path):
