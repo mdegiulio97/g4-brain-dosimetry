@@ -8,6 +8,9 @@ invoke, configure, or require the Geant4 simulation core.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import platform
+import subprocess
 import sys
 import tomllib
 from collections.abc import Sequence
@@ -19,6 +22,8 @@ from typing import Any
 
 import numpy as np
 import yaml
+
+TRACKED_DEPENDENCIES = ("numpy", "pandas", "nibabel", "pyyaml")
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PYTHON_SRC = REPO_ROOT / "python"
@@ -212,6 +217,10 @@ def _build_manifest(
             "project": "G4BrainAtlasDose",
             "package_version": _package_version(),
             "geant4_used": False,
+            "git_commit": _git_commit(),
+            "git_dirty": _git_dirty(),
+            "python_version": platform.python_version(),
+            "dependency_versions": _dependency_versions(),
         },
         "configuration": {
             "seed": seed,
@@ -226,8 +235,14 @@ def _build_manifest(
             "label_counts": atlas_label_counts,
         },
         "outputs": {
-            "regional_dose_csv": {"path": str(output_paths.regional_csv_path)},
-            "qc_report_md": {"path": str(output_paths.qc_report_path)},
+            "regional_dose_csv": {
+                "path": str(output_paths.regional_csv_path),
+                "sha256": _sha256_file(output_paths.regional_csv_path),
+            },
+            "qc_report_md": {
+                "path": str(output_paths.qc_report_path),
+                "sha256": _sha256_file(output_paths.qc_report_path),
+            },
             "run_manifest_yaml": {"path": str(output_paths.manifest_path)},
         },
         "limitations": [
@@ -266,6 +281,55 @@ def _pyproject_version() -> str | None:
 
 def _current_utc_timestamp() -> str:
     return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _sha256_file(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    hasher = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def _git_commit() -> str | None:
+    output = _run_git(["rev-parse", "HEAD"])
+    return output.strip() if output is not None else None
+
+
+def _git_dirty() -> bool | None:
+    output = _run_git(["status", "--porcelain"])
+    if output is None:
+        return None
+    return bool(output.strip())
+
+
+def _run_git(args: list[str]) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    return result.stdout
+
+
+def _dependency_versions() -> dict[str, str | None]:
+    versions: dict[str, str | None] = {}
+    for pkg in TRACKED_DEPENDENCIES:
+        try:
+            versions[pkg] = version(pkg)
+        except PackageNotFoundError:
+            versions[pkg] = None
+    return versions
 
 
 if __name__ == "__main__":

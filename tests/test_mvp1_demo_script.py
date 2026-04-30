@@ -66,11 +66,25 @@ def test_run_demo_writes_reports_and_manifest(tmp_path):
     assert manifest["run"]["timestamp_utc"] == "2026-04-30T12:00:00Z"
     assert manifest["software"]["package_version"] == run_mvp1_demo._package_version()
     assert manifest["software"]["geant4_used"] is False
+    assert isinstance(manifest["software"]["python_version"], str)
+    assert manifest["software"]["python_version"]  # non-empty
+    deps = manifest["software"]["dependency_versions"]
+    assert set(deps.keys()) == {"numpy", "pandas", "nibabel", "pyyaml"}
+    assert all(deps[pkg] is not None for pkg in deps)
+    git_commit = manifest["software"]["git_commit"]
+    assert git_commit is None or (
+        len(git_commit) == 40 and all(c in "0123456789abcdef" for c in git_commit)
+    )
+    assert manifest["software"]["git_dirty"] in (True, False, None)
     assert manifest["configuration"]["seed"] == 12345
     assert manifest["configuration"]["synthetic_atlas_shape"] == [8, 8, 6]
     assert manifest["outputs"]["regional_dose_csv"]["path"] == str(outputs.regional_csv_path)
     assert manifest["outputs"]["qc_report_md"]["path"] == str(outputs.qc_report_path)
     assert manifest["outputs"]["run_manifest_yaml"]["path"] == str(outputs.manifest_path)
+    csv_sha = manifest["outputs"]["regional_dose_csv"]["sha256"]
+    qc_sha = manifest["outputs"]["qc_report_md"]["sha256"]
+    assert isinstance(csv_sha, str) and len(csv_sha) == 64
+    assert isinstance(qc_sha, str) and len(qc_sha) == 64
 
 
 def test_main_writes_default_named_outputs_in_requested_directory(tmp_path, capsys):

@@ -7,7 +7,14 @@ software:
   project: G4BrainAtlasDose
   version: 0.1.0
   geant4_version: null
-  python_version: null
+  python_version: 3.11.x
+  git_commit: 0123456789abcdef0123456789abcdef01234567
+  git_dirty: false
+  dependency_versions:
+    numpy: 1.26.x
+    pandas: 2.1.x
+    nibabel: 5.2.x
+    pyyaml: 6.0.x
 
 configuration:
   config_file: configs/mvp.example.yaml
@@ -16,21 +23,22 @@ configuration:
 inputs:
   phantom_image:
     path: data/raw/phantom_mni152.nii.gz
-    sha256: null
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
   tissue_labels:
     path: data/derived/tissue_labels.nii.gz
-    sha256: null
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
   atlas_labels:
     path: data/external/harvard_oxford_labels.nii.gz
-    sha256: null
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
 
 outputs:
   dose_map:
     path: outputs/example_mvp_run/dose.nii.gz
-    sha256: null
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
   regional_report:
     path: reports/example_mvp_run/regional_dose.csv
-    sha256: null
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
 
 notes:
   - Example manifest only; paths point to expected local artifacts and are not tracked.
+  - sha256 placeholders shown as zeros; real runs populate them from the actual file bytes.
