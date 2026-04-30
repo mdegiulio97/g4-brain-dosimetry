@@ -10,6 +10,7 @@ data/raw/
 data/external/
 data/derived/
 outputs/
+reports/mvp1_demo/
 reports/tmp/
 
 # binary / Monte Carlo outputs

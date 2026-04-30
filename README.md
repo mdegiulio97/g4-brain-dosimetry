@@ -42,6 +42,18 @@ real MRI or Geant4 output data.
 The expected report filename is `regional_dose.csv` with columns:
 `region_label`, `region_name`, `mean_dose`, `std_dose`, `max_dose`, `n_voxels`.
 
+## MVP-1 demo
+
+Run the deterministic Python-only validation demo from the repository root:
+
+```bash
+python scripts/run_mvp1_demo.py
+```
+
+The demo writes `regional_dose.csv`, `qc_report.md`, and `run_manifest.yaml`
+under `reports/mvp1_demo/`. It uses a synthetic atlas and dummy dose map, records
+the seed and package version when available, and does not invoke Geant4.
+
 The MVP-1.5 CLI can run the NIfTI-to-regional-CSV pipeline with default local
 paths:
 
