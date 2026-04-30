@@ -8,6 +8,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from g4brainatlasdose.contracts import validate_atlas_label_array
+
 REGIONAL_DOSE_COLUMNS = [
     "region_label",
     "region_name",
@@ -29,7 +31,7 @@ def compute_regional_dose(
     Missing region names are represented as empty strings.
     """
     dose_array = np.asarray(dose_map, dtype=float)
-    label_array = np.asarray(atlas_labels)
+    label_array = validate_atlas_label_array(atlas_labels)
     names = region_names or {}
 
     if dose_array.shape != label_array.shape:
