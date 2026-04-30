@@ -91,6 +91,7 @@ Methodology, contracts, and roadmap live under [`docs/`](docs/):
 - [`MVP_ROADMAP_CHECKLIST.md`](docs/MVP_ROADMAP_CHECKLIST.md) — MVP-0/1/2 milestones.
 - [`MVP1_VALIDATION_PROTOCOL.md`](docs/MVP1_VALIDATION_PROTOCOL.md) — MVP-1 deterministic Python-only validation.
 - [`PRE_MVP2_AUDIT_AND_ACTION_PLAN.md`](docs/PRE_MVP2_AUDIT_AND_ACTION_PLAN.md) — audit before MVP-2 with prioritized fix list.
+- [`STEP_FUTURI.md`](docs/STEP_FUTURI.md) — Fase C operational plan (Docker + Geant4 skeleton + benchmark).
 - [`MATERIAL_MAP_SCHEMA.md`](docs/MATERIAL_MAP_SCHEMA.md) — `material_map.csv` schema.
 - [`ATLAS_LABELS_SCHEMA.md`](docs/ATLAS_LABELS_SCHEMA.md) — `atlas_labels.csv` and 3D label-image schema.
 
