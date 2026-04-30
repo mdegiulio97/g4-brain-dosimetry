@@ -1,0 +1,40 @@
+# build/install
+build/
+install/
+cmake-build-*/
+geant4/build/
+geant4/install/
+
+# data and outputs
+data/raw/
+data/external/
+data/derived/
+outputs/
+reports/tmp/
+
+# binary / Monte Carlo outputs
+*.root
+*.raw
+*.mhd
+*.mha
+*.nrrd
+*.h5
+*.npz
+*.npy
+
+# large neuroimaging artifacts
+*.nii
+*.nii.gz
+!data/sample/*.nii.gz
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.venv/
+.env
+
+# IDE / system
+.vscode/
+.DS_Store
+Thumbs.db

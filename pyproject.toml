@@ -1,0 +1,31 @@
+[project]
+name = "g4brainatlasdose"
+version = "0.1.0"
+description = "Geant4-based Monte Carlo brain dosimetry on MRI-derived phantoms with atlas-based reporting."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pandas",
+    "nibabel",
+    "scipy",
+    "matplotlib",
+    "simpleitk",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "mypy",
+]
+
+[tool.black]
+line-length = 100
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
