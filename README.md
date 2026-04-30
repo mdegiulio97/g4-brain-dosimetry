@@ -30,6 +30,15 @@ It does not compute dose directly from raw MRI intensities. MRI-derived anatomy 
 6. Aggregate dose by atlas regions.
 7. Generate QC report and run manifest.
 
+## MVP-1 Python
+
+The first Python MVP provides pure utilities to aggregate a dose map by atlas labels
+and write a regional CSV report. It is demonstrated with small synthetic arrays in
+the test suite and does not require real MRI or Geant4 output data.
+
+The expected report filename is `regional_dose.csv` with columns:
+`region_label`, `mean_dose`, `std_dose`, `max_dose`, `n_voxels`.
+
 ## Repository layout
 
 ```text
