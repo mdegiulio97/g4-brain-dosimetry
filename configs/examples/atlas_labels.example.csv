@@ -1,0 +1,5 @@
+label,name,hemisphere,source
+0,Background,,synthetic example
+1,Synthetic Region A,left,synthetic example
+2,Synthetic Region B,right,synthetic example
+3,Synthetic Region C,,synthetic example

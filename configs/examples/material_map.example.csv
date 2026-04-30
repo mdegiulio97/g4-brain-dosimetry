@@ -1,0 +1,5 @@
+label,material_id,density_g_cm3,description
+0,air,0.001205,synthetic background compartment
+1,soft_tissue,1.04,synthetic soft-tissue compartment
+2,bone,1.85,synthetic dense compartment
+3,water,1.0,synthetic reference compartment
