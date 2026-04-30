@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -59,10 +58,3 @@ def compute_regional_dose(
         )
 
     return pd.DataFrame(rows, columns=REGIONAL_DOSE_COLUMNS)
-
-
-def write_regional_dose_csv(regional_dose: pd.DataFrame, output_path: str | Path) -> None:
-    """Write a regional dose table to CSV without the DataFrame index."""
-    path = Path(output_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    regional_dose.to_csv(path, columns=REGIONAL_DOSE_COLUMNS, index=False)
