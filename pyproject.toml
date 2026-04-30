@@ -8,13 +8,10 @@ version = "0.1.0"
 description = "Geant4-based Monte Carlo brain dosimetry on MRI-derived phantoms with atlas-based reporting."
 requires-python = ">=3.11"
 dependencies = [
-    "numpy",
-    "pandas",
-    "nibabel",
-    "scipy",
-    "matplotlib",
-    "simpleitk",
-    "pyyaml",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "nibabel>=5.2",
+    "pyyaml>=6",
 ]
 
 [project.scripts]
@@ -26,6 +23,13 @@ dev = [
     "ruff",
     "black",
     "mypy",
+]
+viz = [
+    "matplotlib",
+]
+geant4-prep = [
+    "simpleitk",
+    "scipy",
 ]
 
 [tool.black]

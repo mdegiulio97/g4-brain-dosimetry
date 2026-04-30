@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from g4brainatlasdose.cli import main
 from g4brainatlasdose.dummy_dose import generate_dummy_dose
@@ -45,14 +46,18 @@ def test_run_regional_dose_pipeline_writes_csv_with_json_region_names(tmp_path):
         region_names_path=region_names_path,
     )
 
-    loaded = pd.read_csv(output_path, keep_default_na=False)
+    loaded = pd.read_csv(
+        output_path,
+        keep_default_na=False,
+        na_values={"std_dose_Gy": [""]},
+    )
     pd.testing.assert_frame_equal(loaded, regional_dose)
-    assert loaded[["region_label", "region_name", "mean_dose", "n_voxels"]].to_dict(
+    assert loaded[["region_label", "region_name", "mean_dose_Gy", "n_voxels"]].to_dict(
         orient="records"
     ) == [
-        {"region_label": 1, "region_name": "Frontal", "mean_dose": 1.5, "n_voxels": 2},
-        {"region_label": 2, "region_name": "Temporal", "mean_dose": 4.0, "n_voxels": 3},
-        {"region_label": 3, "region_name": "", "mean_dose": 7.0, "n_voxels": 1},
+        {"region_label": 1, "region_name": "Frontal", "mean_dose_Gy": 1.5, "n_voxels": 2},
+        {"region_label": 2, "region_name": "Temporal", "mean_dose_Gy": 4.0, "n_voxels": 3},
+        {"region_label": 3, "region_name": "", "mean_dose_Gy": 7.0, "n_voxels": 1},
     ]
 
 
@@ -70,13 +75,33 @@ def test_cli_uses_default_mvp_paths_and_csv_region_names(tmp_path, monkeypatch, 
     assert exit_code == 0
     assert capsys.readouterr().out == "regional_dose.csv\n"
     loaded = pd.read_csv(tmp_path / "regional_dose.csv", keep_default_na=False)
-    assert loaded[["region_label", "region_name", "mean_dose", "n_voxels"]].to_dict(
+    assert loaded[["region_label", "region_name", "mean_dose_Gy", "n_voxels"]].to_dict(
         orient="records"
     ) == [
-        {"region_label": 1, "region_name": "Frontal", "mean_dose": 1.5, "n_voxels": 2},
-        {"region_label": 2, "region_name": "Temporal", "mean_dose": 4.0, "n_voxels": 3},
-        {"region_label": 3, "region_name": "Occipital", "mean_dose": 7.0, "n_voxels": 1},
+        {"region_label": 1, "region_name": "Frontal", "mean_dose_Gy": 1.5, "n_voxels": 2},
+        {"region_label": 2, "region_name": "Temporal", "mean_dose_Gy": 4.0, "n_voxels": 3},
+        {"region_label": 3, "region_name": "Occipital", "mean_dose_Gy": 7.0, "n_voxels": 1},
     ]
+
+
+def test_pipeline_rejects_affine_mismatch(tmp_path):
+    dose_map = np.zeros((2, 2, 2), dtype=np.float32)
+    atlas_labels = np.zeros((2, 2, 2), dtype=np.int16)
+    dose_affine = np.eye(4)
+    atlas_affine = np.eye(4)
+    atlas_affine[0, 0] = 2.0  # different voxel spacing along x
+
+    dose_map_path = tmp_path / "dose_map.nii.gz"
+    atlas_labels_path = tmp_path / "atlas_labels.nii.gz"
+    save_nifti_array(dose_map_path, dose_map, dose_affine)
+    save_nifti_array(atlas_labels_path, atlas_labels, atlas_affine)
+
+    with pytest.raises(ValueError, match="same NIfTI affine"):
+        run_regional_dose_pipeline(
+            dose_map_path=dose_map_path,
+            atlas_labels_path=atlas_labels_path,
+            output_path=tmp_path / "regional_dose.csv",
+        )
 
 
 def test_cli_can_generate_dummy_dose_and_qc_report(tmp_path, capsys):

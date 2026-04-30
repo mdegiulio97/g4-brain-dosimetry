@@ -8,12 +8,14 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from g4brainatlasdose.contracts import validate_atlas_label_array
+
 REGIONAL_DOSE_COLUMNS = [
     "region_label",
     "region_name",
-    "mean_dose",
-    "std_dose",
-    "max_dose",
+    "mean_dose_Gy",
+    "std_dose_Gy",
+    "max_dose_Gy",
     "n_voxels",
 ]
 
@@ -26,10 +28,13 @@ def compute_regional_dose(
     """Aggregate a dose map by atlas region labels.
 
     Label 0 is treated as background and excluded from the returned table.
-    Missing region names are represented as empty strings.
+    Missing region names are represented as empty strings. The ``std_dose_Gy``
+    column reports the **sample** standard deviation (``ddof=1``) following
+    medical-imaging convention; single-voxel regions get ``NaN`` because the
+    sample standard deviation is undefined for n=1.
     """
     dose_array = np.asarray(dose_map, dtype=float)
-    label_array = np.asarray(atlas_labels)
+    label_array = validate_atlas_label_array(atlas_labels)
     names = region_names or {}
 
     if dose_array.shape != label_array.shape:
@@ -50,9 +55,9 @@ def compute_regional_dose(
             {
                 "region_label": label,
                 "region_name": names.get(label, ""),
-                "mean_dose": float(np.mean(region_dose)),
-                "std_dose": float(np.std(region_dose, ddof=0)),
-                "max_dose": float(np.max(region_dose)),
+                "mean_dose_Gy": float(np.mean(region_dose)),
+                "std_dose_Gy": float(np.std(region_dose, ddof=1)) if region_dose.size > 1 else float("nan"),
+                "max_dose_Gy": float(np.max(region_dose)),
                 "n_voxels": int(region_dose.size),
             }
         )

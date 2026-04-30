@@ -33,6 +33,10 @@ transport, scoring, or exported simulation dose maps.
   labels; it is not a physical dose field.
 - Atlas and dose arrays have the same shape.
 - Region label `0` is background and is excluded from regional dose rows.
+- The `std_dose_Gy` column reports the **sample** standard deviation
+  (`numpy.std(..., ddof=1)`) following medical-imaging convention; regions
+  containing a single voxel get `NaN` because the sample standard deviation
+  is undefined for `n=1`.
 - The package version is read from installed package metadata when available,
   with `pyproject.toml` used as a source-tree fallback.
 
@@ -61,8 +65,10 @@ python scripts/run_mvp1_demo.py --seed 12345
 The demo writes the following generated artifacts under `reports/mvp1_demo/`:
 
 - `regional_dose.csv`: one row per non-background synthetic atlas region with
-  columns `region_label`, `region_name`, `mean_dose`, `std_dose`, `max_dose`,
-  and `n_voxels`.
+  columns `region_label`, `region_name`, `mean_dose_Gy`, `std_dose_Gy`,
+  `max_dose_Gy`, and `n_voxels`. The `_Gy` suffix declares the unit (Gray)
+  for future Geant4-driven runs; the MVP-1 dummy dose fills these columns
+  with dimensionless synthetic values for analytics validation only.
 - `qc_report.md`: markdown QC summary covering region count, labeled voxel
   count, voxel coverage, global dose min/mean/max, output CSV path, and demo
   input metadata.
