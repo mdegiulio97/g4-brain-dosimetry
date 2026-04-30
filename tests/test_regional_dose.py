@@ -34,17 +34,17 @@ def test_compute_regional_dose_aggregates_non_background_labels():
         {
             "region_label": 1,
             "region_name": "",
-            "mean_dose": 1.5,
-            "std_dose": 0.5,
-            "max_dose": 2.0,
+            "mean_dose_Gy": 1.5,
+            "std_dose_Gy": 0.5,
+            "max_dose_Gy": 2.0,
             "n_voxels": 2,
         },
         {
             "region_label": 2,
             "region_name": "",
-            "mean_dose": 3.5,
-            "std_dose": 0.5,
-            "max_dose": 4.0,
+            "mean_dose_Gy": 3.5,
+            "std_dose_Gy": 0.5,
+            "max_dose_Gy": 4.0,
             "n_voxels": 2,
         },
     ]
@@ -124,15 +124,15 @@ def test_write_regional_dose_csv_writes_expected_file(tmp_path):
             {
                 "region_label": 1,
                 "region_name": "Frontal",
-                "mean_dose": 1.5,
-                "std_dose": 0.5,
-                "max_dose": 2.0,
+                "mean_dose_Gy": 1.5,
+                "std_dose_Gy": 0.5,
+                "max_dose_Gy": 2.0,
                 "n_voxels": 2,
             }
         ]
     )
     regional_dose = regional_dose[
-        ["n_voxels", "max_dose", "std_dose", "mean_dose", "region_name", "region_label"]
+        ["n_voxels", "max_dose_Gy", "std_dose_Gy", "mean_dose_Gy", "region_name", "region_label"]
     ]
     output_path = tmp_path / "nested" / "regional_dose.csv"
 

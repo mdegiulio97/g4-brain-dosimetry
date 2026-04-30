@@ -13,9 +13,9 @@ from g4brainatlasdose.contracts import validate_atlas_label_array
 REGIONAL_DOSE_COLUMNS = [
     "region_label",
     "region_name",
-    "mean_dose",
-    "std_dose",
-    "max_dose",
+    "mean_dose_Gy",
+    "std_dose_Gy",
+    "max_dose_Gy",
     "n_voxels",
 ]
 
@@ -52,9 +52,9 @@ def compute_regional_dose(
             {
                 "region_label": label,
                 "region_name": names.get(label, ""),
-                "mean_dose": float(np.mean(region_dose)),
-                "std_dose": float(np.std(region_dose, ddof=0)),
-                "max_dose": float(np.max(region_dose)),
+                "mean_dose_Gy": float(np.mean(region_dose)),
+                "std_dose_Gy": float(np.std(region_dose, ddof=0)),
+                "max_dose_Gy": float(np.max(region_dose)),
                 "n_voxels": int(region_dose.size),
             }
         )

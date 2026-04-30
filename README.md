@@ -40,7 +40,10 @@ demonstrated with small synthetic arrays in the test suite and does not require
 real MRI or Geant4 output data.
 
 The expected report filename is `regional_dose.csv` with columns:
-`region_label`, `region_name`, `mean_dose`, `std_dose`, `max_dose`, `n_voxels`.
+`region_label`, `region_name`, `mean_dose_Gy`, `std_dose_Gy`, `max_dose_Gy`, `n_voxels`.
+The `_Gy` suffix marks the dose unit (Gray) for future Geant4 runs; the MVP-1
+dummy dose populates these columns with dimensionless synthetic values for
+pipeline validation only.
 
 ## MVP-1 demo
 

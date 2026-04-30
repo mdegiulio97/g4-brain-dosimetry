@@ -61,8 +61,10 @@ python scripts/run_mvp1_demo.py --seed 12345
 The demo writes the following generated artifacts under `reports/mvp1_demo/`:
 
 - `regional_dose.csv`: one row per non-background synthetic atlas region with
-  columns `region_label`, `region_name`, `mean_dose`, `std_dose`, `max_dose`,
-  and `n_voxels`.
+  columns `region_label`, `region_name`, `mean_dose_Gy`, `std_dose_Gy`,
+  `max_dose_Gy`, and `n_voxels`. The `_Gy` suffix declares the unit (Gray)
+  for future Geant4-driven runs; the MVP-1 dummy dose fills these columns
+  with dimensionless synthetic values for analytics validation only.
 - `qc_report.md`: markdown QC summary covering region count, labeled voxel
   count, voxel coverage, global dose min/mean/max, output CSV path, and demo
   input metadata.

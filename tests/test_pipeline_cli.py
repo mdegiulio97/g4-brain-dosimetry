@@ -48,12 +48,12 @@ def test_run_regional_dose_pipeline_writes_csv_with_json_region_names(tmp_path):
 
     loaded = pd.read_csv(output_path, keep_default_na=False)
     pd.testing.assert_frame_equal(loaded, regional_dose)
-    assert loaded[["region_label", "region_name", "mean_dose", "n_voxels"]].to_dict(
+    assert loaded[["region_label", "region_name", "mean_dose_Gy", "n_voxels"]].to_dict(
         orient="records"
     ) == [
-        {"region_label": 1, "region_name": "Frontal", "mean_dose": 1.5, "n_voxels": 2},
-        {"region_label": 2, "region_name": "Temporal", "mean_dose": 4.0, "n_voxels": 3},
-        {"region_label": 3, "region_name": "", "mean_dose": 7.0, "n_voxels": 1},
+        {"region_label": 1, "region_name": "Frontal", "mean_dose_Gy": 1.5, "n_voxels": 2},
+        {"region_label": 2, "region_name": "Temporal", "mean_dose_Gy": 4.0, "n_voxels": 3},
+        {"region_label": 3, "region_name": "", "mean_dose_Gy": 7.0, "n_voxels": 1},
     ]
 
 
@@ -71,12 +71,12 @@ def test_cli_uses_default_mvp_paths_and_csv_region_names(tmp_path, monkeypatch, 
     assert exit_code == 0
     assert capsys.readouterr().out == "regional_dose.csv\n"
     loaded = pd.read_csv(tmp_path / "regional_dose.csv", keep_default_na=False)
-    assert loaded[["region_label", "region_name", "mean_dose", "n_voxels"]].to_dict(
+    assert loaded[["region_label", "region_name", "mean_dose_Gy", "n_voxels"]].to_dict(
         orient="records"
     ) == [
-        {"region_label": 1, "region_name": "Frontal", "mean_dose": 1.5, "n_voxels": 2},
-        {"region_label": 2, "region_name": "Temporal", "mean_dose": 4.0, "n_voxels": 3},
-        {"region_label": 3, "region_name": "Occipital", "mean_dose": 7.0, "n_voxels": 1},
+        {"region_label": 1, "region_name": "Frontal", "mean_dose_Gy": 1.5, "n_voxels": 2},
+        {"region_label": 2, "region_name": "Temporal", "mean_dose_Gy": 4.0, "n_voxels": 3},
+        {"region_label": 3, "region_name": "Occipital", "mean_dose_Gy": 7.0, "n_voxels": 1},
     ]
 
 
