@@ -40,6 +40,17 @@ in the test suite and does not require real MRI or Geant4 output data.
 The expected report filename is `regional_dose.csv` with columns:
 `region_label`, `region_name`, `mean_dose`, `std_dose`, `max_dose`, `n_voxels`.
 
+The MVP-1.5 CLI can run the NIfTI-to-regional-CSV pipeline with default local
+paths:
+
+```bash
+g4brainatlasdose-mvp \
+  --dose-map dose_map.nii.gz \
+  --atlas-labels atlas_labels.nii.gz \
+  --output regional_dose.csv \
+  --region-names region_names.csv
+```
+
 ## Repository layout
 
 ```text
