@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from g4brainatlasdose.analytics import compute_regional_dose
@@ -31,7 +32,13 @@ def run_regional_dose_pipeline(
         if dummy_dose_output_path is not None:
             save_nifti_array(dummy_dose_output_path, dose_map, atlas_affine)
     else:
-        dose_map, _dose_affine = load_nifti_array(dose_map_path)
+        dose_map, dose_affine = load_nifti_array(dose_map_path)
+        if not np.allclose(dose_affine, atlas_affine):
+            msg = (
+                "dose_map and atlas_labels must share the same NIfTI affine matrix; "
+                f"got dose affine\n{dose_affine}\nvs atlas affine\n{atlas_affine}"
+            )
+            raise ValueError(msg)
 
     region_names = load_region_names(region_names_path) if region_names_path is not None else None
 
