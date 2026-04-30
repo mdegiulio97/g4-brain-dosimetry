@@ -81,6 +81,26 @@ g4brainatlasdose-mvp \
   --qc-report reports/qc_report.md
 ```
 
+## Documentation
+
+Methodology, contracts, and roadmap live under [`docs/`](docs/):
+
+- [`PROJECT_SCOPE.md`](docs/PROJECT_SCOPE.md) — perimeter (no clinical TPS, MRI is anatomical support only).
+- [`SCIENTIFIC_RATIONALE_AND_ROADMAP.md`](docs/SCIENTIFIC_RATIONALE_AND_ROADMAP.md) — scientific rationale and full roadmap.
+- [`TECHNICAL_DESIGN.md`](docs/TECHNICAL_DESIGN.md) — repository contracts and MVP boundaries.
+- [`MVP_ROADMAP_CHECKLIST.md`](docs/MVP_ROADMAP_CHECKLIST.md) — MVP-0/1/2 milestones.
+- [`MVP1_VALIDATION_PROTOCOL.md`](docs/MVP1_VALIDATION_PROTOCOL.md) — MVP-1 deterministic Python-only validation.
+- [`PRE_MVP2_AUDIT_AND_ACTION_PLAN.md`](docs/PRE_MVP2_AUDIT_AND_ACTION_PLAN.md) — audit before MVP-2 with prioritized fix list.
+- [`MATERIAL_MAP_SCHEMA.md`](docs/MATERIAL_MAP_SCHEMA.md) — `material_map.csv` schema.
+- [`ATLAS_LABELS_SCHEMA.md`](docs/ATLAS_LABELS_SCHEMA.md) — `atlas_labels.csv` and 3D label-image schema.
+
+Phase-B methodology (frozen scientific decisions for MVP-2):
+
+- [`MATERIAL_ASSIGNMENT_METHODOLOGY.md`](docs/MATERIAL_ASSIGNMENT_METHODOLOGY.md) — bulk look-up vs sCT, ICRU-44 / Woodard & White densities and compositions for the five tissue classes (`configs/examples/material_map.brain.csv`).
+- [`PHYSICS_LIST_AND_CONVERGENCE.md`](docs/PHYSICS_LIST_AND_CONVERGENCE.md) — Geant4 EM physics constructor, range cuts, voxel scorer, primaries target, water-phantom acceptance.
+- [`HARVARD_OXFORD_SETUP.md`](docs/HARVARD_OXFORD_SETUP.md) — FSL Harvard-Oxford download/parse procedure (`scripts/build_atlas_labels.py`).
+- [`CPP_PYTHON_INTERFACE.md`](docs/CPP_PYTHON_INTERFACE.md) — on-disk contract between the Geant4 core and the Python analytics, with smoke test in `tests/test_dose_artefact.py`.
+
 ## Repository layout
 
 ```text

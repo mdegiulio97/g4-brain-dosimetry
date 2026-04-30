@@ -1,0 +1,6 @@
+label,material_id,density_g_cm3,description
+0,G4_AIR,0.001205,Background air; NIST / ICRU-44 dry-air reference
+1,G4_CSF,1.007,Cerebrospinal fluid as saline; Woodard and White 1986 BJR 59 1209
+2,G4_GRAY_MATTER,1.045,Cerebral cortex gray matter; Woodard and White 1986 BJR 59 1209
+3,G4_WHITE_MATTER,1.041,Cerebral white matter; Woodard and White 1986 BJR 59 1209
+4,G4_BONE_CORTICAL_ICRP,1.850,Cortical bone; ICRU-44 / ICRP-89
