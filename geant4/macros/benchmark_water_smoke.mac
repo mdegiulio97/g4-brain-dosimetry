@@ -1,0 +1,25 @@
+# Fast smoke version of benchmark_water.mac (5k primaries) to validate the full
+# chain (env -> physics data -> scoring dump format) before the 2M production run.
+/run/initialize
+
+/score/create/boxMesh pdd
+/score/mesh/boxSize 0.5 0.5 15. cm
+/score/mesh/nBin 1 1 300
+/score/mesh/translate/xyz 0 0 0 cm
+/score/quantity/doseDeposit dose Gy
+/score/close
+
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 6 MeV
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/halfx 5 cm
+/gps/pos/halfy 5 cm
+/gps/pos/centre 0 0 -15.5 cm
+/gps/direction 0 0 1
+
+/run/printProgress 1000
+/run/beamOn 5000
+
+/score/dumpQuantityToFile pdd dose reports/benchmark_mc/pdd_6MeV_smoke.txt

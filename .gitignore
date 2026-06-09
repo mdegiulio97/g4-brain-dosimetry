@@ -13,6 +13,11 @@ outputs/
 reports/mvp1_demo/
 reports/tmp/
 
+# transient run logs and smoke dumps (regenerable; keep REPORT.md + CSV curves)
+reports/wsl_build.log
+reports/**/run*.log
+reports/**/*_smoke.txt
+
 # binary / Monte Carlo outputs
 *.root
 *.raw

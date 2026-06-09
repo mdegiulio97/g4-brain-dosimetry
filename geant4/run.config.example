@@ -1,0 +1,37 @@
+# Example G4BrainAtlasDose run configuration. PENDING BUILD VERIFICATION.
+# Copy to run.config and point the binary at it:  export G4BAD_RUNCONFIG=...
+# Format: "key = value", '#' starts a comment. Missing keys keep defaults.
+
+# geometry: water_box | water_with_insert | voxel_phantom
+geometry = water_with_insert
+
+# --- voxel phantom (used only when geometry = voxel_phantom) ---
+# Build the inputs with:
+#   python scripts/make_synthetic_phantom.py --out-dir data/derived/synthetic
+# (or, for real anatomy, scripts/build_tissue_labels_mha.py from an MNI152 NIfTI),
+# then generate a matching scoring macro with make_phantom_score_macro.py.
+tissue_labels_mha = data/derived/synthetic/tissue_labels.mha
+material_map_csv = data/derived/synthetic/material_map.csv
+
+# Full phantom side lengths (cm).
+phantom_size_cm = 30 30 30
+
+# EM physics: option4 (MV reference) | option3 | livermore | penelope (kV).
+em_physics = option4
+
+# Range production cut (mm).
+production_cut_mm = 0.1
+
+# --- insert (used only when geometry = water_with_insert) ---
+# Material id (MaterialFactory): NIST id, brain tissue (CSF|GRAY_MATTER|
+# WHITE_MATTER), or FE_LOADED:<mg_per_g>.
+# Examples:
+#   G4_BONE_CORTICAL_ICRP  -> calcification proxy
+#   G4_AIR                 -> resection cavity (geometric effect)
+#   FE_LOADED:1.0          -> iron-loaded tissue
+insert_material = G4_BONE_CORTICAL_ICRP
+
+insert_size_cm = 4 4 2
+insert_depth_cm = 10
+# Density override (g/cm3); <=0 keeps material default. e.g. 2.5 for heavy calcification.
+insert_density_g_cm3 = -1

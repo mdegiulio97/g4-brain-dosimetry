@@ -1,0 +1,13 @@
+# Run config for the Stage-1 water PDD benchmark (the mandatory physics gate).
+# The PDD must be measured in PURE WATER: do NOT use run.config.example here, it
+# declares geometry = water_with_insert (a bone insert at 10 cm that corrupts the
+# central-axis PDD). Use this file with benchmark_water.mac.
+# Format: "key = value", '#' starts a comment.
+
+geometry = water_box
+
+# EM physics: option4 (MV reference) | option3 | livermore | penelope (kV).
+em_physics = option4
+
+# Range production cut (mm).
+production_cut_mm = 0.1

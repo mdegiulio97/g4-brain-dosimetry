@@ -1,0 +1,30 @@
+# Water-phantom PDD benchmark (the mandatory Stage-1 gate before any phantom).
+# PENDING BUILD VERIFICATION. Run with run.config geometry = water_box.
+#
+# Scores a thin central column to extract the central-axis percent depth dose,
+# to be compared against reference 6 MV PDD tables (BJR Suppl. 25) via
+# scripts/analyze_pdd.py with the gamma(2%/2mm) >= 95% acceptance criterion.
+
+/run/initialize
+
+/score/create/boxMesh pdd
+/score/mesh/boxSize 0.5 0.5 15. cm
+/score/mesh/nBin 1 1 300
+/score/mesh/translate/xyz 0 0 0 cm
+/score/quantity/doseDeposit dose Gy
+/score/close
+
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 6 MeV
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/halfx 5 cm
+/gps/pos/halfy 5 cm
+/gps/pos/centre 0 0 -15.5 cm
+/gps/direction 0 0 1
+
+/run/printProgress 100000
+/run/beamOn 2000000
+
+/score/dumpQuantityToFile pdd dose reports/benchmark_mc/pdd_6MeV.txt
