@@ -1,0 +1,7 @@
+# Interactive visualization (only used when launched with no macro argument).
+/run/initialize
+/vis/open OGL 600x600-0+0
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 70 20
+/vis/scene/add/trajectories smooth
+/vis/scene/endOfEventAction accumulate

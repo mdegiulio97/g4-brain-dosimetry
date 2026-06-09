@@ -1,0 +1,26 @@
+# Wide-column variant of benchmark_water.mac: 4x4 cm lateral scoring (vs 1x1) to
+# cut central-axis statistical noise ~9x for clean cross-physics PDD comparison.
+# Mono 6 MeV, pure water (run.config geometry = water_box).
+/run/initialize
+
+/score/create/boxMesh pdd
+/score/mesh/boxSize 2. 2. 15. cm
+/score/mesh/nBin 4 4 300
+/score/mesh/translate/xyz 0 0 0 cm
+/score/quantity/doseDeposit dose Gy
+/score/close
+
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono 6 MeV
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/halfx 5 cm
+/gps/pos/halfy 5 cm
+/gps/pos/centre 0 0 -15.5 cm
+/gps/direction 0 0 1
+
+/run/printProgress 500000
+/run/beamOn 4000000
+
+/score/dumpQuantityToFile pdd dose reports/benchmark_mc/pdd_6MeV.txt

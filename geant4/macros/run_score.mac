@@ -1,0 +1,39 @@
+# Parametric scoring run for G4BrainAtlasDose. PENDING BUILD VERIFICATION.
+#
+# Energy, primary count and output file are read from environment variables so
+# the SAME macro serves every energy and both geometries (water_box vs
+# water_with_insert, chosen in run.config). Set before launching:
+#   G4BAD_ENERGY  e.g. "6 MeV"   (number AND unit)
+#   G4BAD_NPRIM   e.g. "2000000"
+#   G4BAD_OUT     e.g. "reports/run/dose_6MeV_insert.txt"
+# (the calling script sets these and creates the output directory.)
+
+/control/getEnv G4BAD_ENERGY
+/control/getEnv G4BAD_NPRIM
+/control/getEnv G4BAD_OUT
+
+/run/initialize
+
+# Dose mesh overlaying the central 10x10 cm column, 2 mm lateral, 1 mm axial.
+/score/create/boxMesh m
+/score/mesh/boxSize 5. 5. 15. cm
+/score/mesh/nBin 50 50 300
+/score/mesh/translate/xyz 0 0 0 cm
+/score/quantity/doseDeposit dose Gy
+/score/close
+
+# Parallel square 10x10 cm photon field entering the -z face (z = -15 cm).
+/gps/particle gamma
+/gps/ene/type Mono
+/gps/ene/mono {G4BAD_ENERGY}
+/gps/pos/type Plane
+/gps/pos/shape Square
+/gps/pos/halfx 5 cm
+/gps/pos/halfy 5 cm
+/gps/pos/centre 0 0 -15.5 cm
+/gps/direction 0 0 1
+
+/run/printProgress 100000
+/run/beamOn {G4BAD_NPRIM}
+
+/score/dumpQuantityToFile m dose {G4BAD_OUT}

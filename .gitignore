@@ -13,6 +13,19 @@ outputs/
 reports/mvp1_demo/
 reports/tmp/
 
+# transient run logs and smoke dumps (regenerable; keep REPORT.md + CSV curves)
+reports/wsl_build.log
+reports/**/run*.log
+reports/**/*_smoke.txt
+
+# large phantom dose dumps (regenerable from the committed macro + phantom generator)
+reports/phantom_mc/*.txt
+
+
+# MNI152 anatomy dose dumps/logs (regenerable; keep the report)
+reports/mni152_mc/*.txt
+reports/mni152_mc/*.log
+
 # binary / Monte Carlo outputs
 *.root
 *.raw

@@ -1,0 +1,12 @@
+# Real MNI152 anatomy run config (Stage C closure). Geometry from the .mha.
+# Build the inputs with:
+#   python scripts/make_mni152_phantom.py --factor 3 --out-dir data/derived/mni152
+#   python scripts/build_tissue_labels_mha.py \
+#       --labels data/derived/mni152/tissue_labels.nii.gz \
+#       --material-map data/derived/mni152/material_map.csv \
+#       --out data/derived/mni152/tissue_labels.mha
+geometry = voxel_phantom
+tissue_labels_mha = data/derived/mni152/tissue_labels.mha
+material_map_csv = data/derived/mni152/material_map.csv
+em_physics = option4
+production_cut_mm = 0.1

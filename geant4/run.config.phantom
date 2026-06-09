@@ -1,0 +1,11 @@
+# Stage C2 voxel-phantom run config. Geometry comes entirely from the .mha (dims +
+# spacing); phantom_size_cm is ignored for voxel_phantom. Build the inputs with:
+#   python scripts/make_synthetic_phantom.py --out-dir data/derived/synthetic
+#   python scripts/make_phantom_score_macro.py \
+#       --labels data/derived/synthetic/tissue_labels.mha \
+#       --out geant4/macros/run_phantom.generated.mac
+geometry = voxel_phantom
+tissue_labels_mha = data/derived/synthetic/tissue_labels.mha
+material_map_csv = data/derived/synthetic/material_map.csv
+em_physics = option4
+production_cut_mm = 0.1
