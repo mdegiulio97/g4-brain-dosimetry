@@ -1,0 +1,5 @@
+# Track A cross-check: same pure-water mono-6 MeV benchmark, Penelope EM physics.
+# Independent EM models/datasets vs option4 must converge on the same PDD.
+geometry = water_box
+em_physics = penelope
+production_cut_mm = 0.1
