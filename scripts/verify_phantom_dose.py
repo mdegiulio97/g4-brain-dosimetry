@@ -89,9 +89,10 @@ def main(argv=None):
         "YES" if buildup else "NO"))
 
     ok = ok_shape and ratio < 0.5 and buildup
-    print("\nVerdict: {} -- phantom built ({} non-air voxels, 5 materials), dose mesh "
+    print("\nVerdict: {} -- phantom built ({} non-air voxels, {} materials), dose mesh "
           "aligned with .mha voxel order (shape match + z build-up + air<<tissue)."
-          .format("PASS" if ok else "CHECK", int((labels != 0).sum())))
+          .format("PASS" if ok else "CHECK", int((labels != 0).sum()),
+                  int(len(np.unique(labels)))))
     return 0 if ok else 1
 
 

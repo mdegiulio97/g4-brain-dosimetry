@@ -8,8 +8,12 @@
 > (copy-number) order: shape match (30×36×30, asymmetric in y), build-up along z
 > (→ z is the beam axis, rules out an x↔z swap the shape check can't), and per-voxel
 > air/tissue dose ratio 0.21 (labels spatially aligned with dose). The Stage-1 water
-> benchmark still passes (it shares the binary). Real MNI152 anatomy is the next
-> increment.
+> benchmark still passes (it shares the binary).
+>
+> **Real MNI152 anatomy DONE (2026-06-09):** the full pipeline was run end-to-end on
+> real brain anatomy (ICBM152 GM/WM/CSF priors → labels → .mha → voxel phantom →
+> dose), 65×77×63 @ 3 mm, verification PASS with a physically correct anatomical
+> depth-dose. See `reports/mni152_mc/REPORT.md` and `scripts/make_mni152_phantom.py`.
 
 ## What this adds
 
