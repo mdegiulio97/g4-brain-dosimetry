@@ -83,6 +83,37 @@ the analytic spectrum carries too much high-energy fluence. Quantified, honest r
 for a formal clinical gate, replace with a cited 6 MV spectrum (Mohan et al. 1985) or
 an IAEA phase-space, plus a measured / BJR-25 PDD.
 
+## Track B closed with CITED data — Mohan6 spectrum + inverse-square vs BJR-25
+
+The +8..12 pp deep-dose excess in the analytic-spectrum run was diagnosed and
+resolved with cited reference data (`scripts/clinical_pdd_compare.py`):
+
+- **Cited spectrum**: `data/reference/mohan6.spectrum` — Mohan, Chui & Lidofsky,
+  Med Phys 12(5):592–597 (1985), as distributed with EGSnrc (24 bins, 0–6 MeV).
+  Macro via `scripts/egsnrc_spectrum_to_macro.py`.
+- **Finding 1 — spectrum was NOT the cause.** Mohan6 and the analytic
+  `make_6mv_spectrum.py` beam give the same parallel-beam PDD (<1 pp at 5/10/15/20
+  cm). The deep excess is not a spectrum artefact.
+- **Finding 2 — geometry was.** Our source is a *parallel plane* beam; clinical PDD
+  is a *divergent point source at SSD 100 cm*. Applying the inverse-square factor
+  `ISF(d) = ((SSD+dmax)/(SSD+d))^2` to the MC reproduces the cited BJR-25 landmarks:
+
+  | depth | MC parallel % | MC + ISF (clinical) % | BJR-25 % | Δ (pp) |
+  |---|---|---|---|---|
+  | dmax (1.75 cm) | 99.1 | 99.5 | 100.0 | −0.5 |
+  | 5 cm  | 90.3 | 84.7 | 86.5 | −1.8 |
+  | 6.7 cm (d80) | 85.4 | 77.6 | 80.0 | −2.4 |
+  | 10 cm (D10) | 76.8 | **65.7** | **66.8** | **−1.1** |
+  | 15 cm | 62.4 | 48.8 | 49.0 | −0.2 |
+  | 20 cm | 51.2 | 36.8 | 38.0 | −1.2 |
+
+  BJR-25 landmarks: `data/reference/pdd_6MV_BJR25_landmarks.csv` (cited values).
+
+**Clinical 6 MV PDD now matches cited BJR-25 landmarks to ~1–2 pp** — within a
+γ(2%/2mm)-class tolerance. Remaining for a *formal* full-curve gamma: the complete
+copyrighted BJR-25 6 MV table (only landmarks are openly cited), and/or modelling
+beam divergence directly in the MC instead of the post-hoc inverse-square factor.
+
 ## Caveats / next
 
 - The per-bin curve is noisy (1×1 cm scoring column = a single lateral voxel; e.g. a
