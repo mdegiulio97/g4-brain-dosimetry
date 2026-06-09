@@ -22,6 +22,10 @@ reports/**/*_smoke.txt
 reports/phantom_mc/*.txt
 
 
+# MNI152 anatomy dose dumps/logs (regenerable; keep the report)
+reports/mni152_mc/*.txt
+reports/mni152_mc/*.log
+
 # binary / Monte Carlo outputs
 *.root
 *.raw
