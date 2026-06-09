@@ -21,6 +21,7 @@ reports/**/*_smoke.txt
 # large phantom dose dumps (regenerable from the committed macro + phantom generator)
 reports/phantom_mc/*.txt
 
+
 # binary / Monte Carlo outputs
 *.root
 *.raw
