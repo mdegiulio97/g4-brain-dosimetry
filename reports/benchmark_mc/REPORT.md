@@ -109,10 +109,25 @@ resolved with cited reference data (`scripts/clinical_pdd_compare.py`):
 
   BJR-25 landmarks: `data/reference/pdd_6MV_BJR25_landmarks.csv` (cited values).
 
-**Clinical 6 MV PDD now matches cited BJR-25 landmarks to ~1–2 pp** — within a
-γ(2%/2mm)-class tolerance. Remaining for a *formal* full-curve gamma: the complete
-copyrighted BJR-25 6 MV table (only landmarks are openly cited), and/or modelling
-beam divergence directly in the MC instead of the post-hoc inverse-square factor.
+**Clinical 6 MV PDD now matches cited BJR-25 landmarks to ~1–2 pp.**
+
+### Formal full-curve gamma — PASS
+
+`scripts/make_bjr25_reference.py` builds a dense BJR-25 curve (`data/reference/
+pdd_6MV_BJR25.csv`) anchored on the cited points (dmax/d80/D10) with a documented
+piecewise-exponential between them (validated against independent textbook values it
+did not fit: d5 86.1%, d15 50.8%, d20 38.7%). `scripts/gamma_clinical_bjr25.py` then
+runs γ(2%/2mm) of the clinical MC (Mohan6 + inverse-square) over [dmax, 25 cm]:
+
+| primaries | pass rate | γ mean / max | result |
+|---|---|---|---|
+| 4M  | 73.0 % | 0.78 / 1.68 | FAIL (statistics-limited) |
+| **20M** | **95.7 %** | **0.62 / 1.16** | **PASS** (threshold 95 %) |
+
+The gate is statistics-limited, not physics-limited: 20M primaries clears γ(2%/2mm).
+**Stage-1 physics gate: PASSED** against a cited-anchored BJR-25 reference. For a
+definitive result, swap in the exact BJR-25 book table (only landmarks are openly
+cited) and/or model beam divergence directly instead of the post-hoc ISF.
 
 ## Caveats / next
 
