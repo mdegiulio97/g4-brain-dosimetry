@@ -1,10 +1,15 @@
 # Stage C2 — Voxelised phantom scaffolding
 
-> **Build status: PENDING VERIFICATION.** The C++ (MetaImage reader, material-map
-> loader, `G4PhantomParameterisation` geometry) was written without a Geant4
-> toolchain and has **not** been compiled. The Python preprocessing and I/O
-> **have** been tested offline. Trust nothing from the C++ until it compiles in
-> the Docker image and the Stage-1 water benchmark still passes.
+> **Build status: BUILDS, RUNS, VERIFIED (2026-06-09).** The C++ (MetaImage reader,
+> material-map loader, `G4PhantomParameterisation` geometry) compiles in the
+> conda-forge Geant4 11.2.2 toolchain and was run on the synthetic phantom
+> (`run.config.phantom`, 30×36×30, 5 materials, 1M primaries). `scripts/
+> verify_phantom_dose.py` confirms the dose mesh aligns with the `.mha` voxel
+> (copy-number) order: shape match (30×36×30, asymmetric in y), build-up along z
+> (→ z is the beam axis, rules out an x↔z swap the shape check can't), and per-voxel
+> air/tissue dose ratio 0.21 (labels spatially aligned with dose). The Stage-1 water
+> benchmark still passes (it shares the binary). Real MNI152 anatomy is the next
+> increment.
 
 ## What this adds
 
