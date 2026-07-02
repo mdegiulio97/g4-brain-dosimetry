@@ -7,6 +7,8 @@
 //
 // Geometry/material come from the file named by env var G4BAD_RUNCONFIG
 // (see geant4/run.config.example). Beam and scoring mesh come from the macro.
+#include <cstdlib>
+
 #include "G4RunManagerFactory.hh"
 #include "G4ScoringManager.hh"
 #include "G4UImanager.hh"
@@ -21,6 +23,18 @@ int main(int argc, char** argv) {
   if (argc < 2) {
     G4cerr << "usage: " << argv[0] << " <macro>" << G4endl;
     return 1;
+  }
+
+  // Seed the RNG from G4BAD_SEED (nonzero). Without this every run uses the same
+  // default seed, so "independent" runs are identical -- which breaks statistical
+  // uncertainty propagation on ratios and any batch-variance estimate. Default
+  // (unset/0) keeps the reproducible fixed seed.
+  if (const char* seedEnv = std::getenv("G4BAD_SEED")) {
+    const long seed = std::atol(seedEnv);
+    if (seed != 0) {
+      CLHEP::HepRandom::setTheSeed(seed);
+      G4cout << "[main] RNG seed = " << seed << G4endl;
+    }
   }
 
   const RunConfig cfg = RunConfig::Load();
