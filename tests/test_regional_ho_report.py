@@ -42,7 +42,10 @@ def test_region_table_sorted_desc_and_excludes_background():
     dose[atlas == 1] = 1.0
     dose[atlas == 2] = 5.0
 
-    df = rep.region_table(dose, atlas, {1: "low", 2: "high"})
+    from g4score_io import ScoreDump
+    dump = ScoreDump(dose, dose.shape,
+                     np.full(dose.shape, np.nan), np.full(dose.shape, np.nan))
+    df = rep.region_table(dump, atlas, {1: "low", 2: "high"})
     assert list(df["region_name"]) == ["high", "low"]     # sorted desc
     assert set(df["region_label"]) == {1, 2}              # no background 0
     assert df.iloc[0]["mean_dose_Gy"] == 5.0

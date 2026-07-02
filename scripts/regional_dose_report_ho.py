@@ -37,8 +37,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from g4brainatlasdose.analytics import compute_regional_dose  # noqa: E402
-from g4score_io import read_score_dump  # noqa: E402
+from g4brainatlasdose.analytics import compute_regional_dose_mc  # noqa: E402
+from g4score_io import read_score_dump_full  # noqa: E402
 
 # Subcortical HO labels that are generic tissue envelopes (they blanket the whole
 # hemisphere and would swamp the specific deep-gray structures we care about).
@@ -57,12 +57,12 @@ def load_reference_grid(ref_nii):
 
 
 def load_dose_aligned(dose_path, ref_shape):
-    dose, shape = read_score_dump(dose_path)
-    if tuple(shape) != tuple(ref_shape):
+    dump = read_score_dump_full(dose_path)
+    if tuple(dump.shape) != tuple(ref_shape):
         raise SystemExit(
             "dose grid {} != reference grid {}: orientation/scoring mismatch, "
-            "refusing to report".format(shape, ref_shape))
-    return dose
+            "refusing to report".format(dump.shape, ref_shape))
+    return dump
 
 
 def fetch_ho(which, thr, ref_img):
@@ -112,8 +112,9 @@ def alignment_guard(dose, brain_mask, atlas_arr, tag):
                 ratio=mean_brain / mean_air if mean_air else float("nan"))
 
 
-def region_table(dose, atlas_arr, names):
-    df = compute_regional_dose(dose, atlas_arr, region_names=names)
+def region_table(dump, atlas_arr, names):
+    df = compute_regional_dose_mc(dump.dose, dump.sumsq, dump.n, atlas_arr,
+                                  region_names=names)
     return df.sort_values("mean_dose_Gy", ascending=False).reset_index(drop=True)
 
 
@@ -125,7 +126,10 @@ def write_markdown(path, ctx):
                  "{}) by Harvard-Oxford atlas region.\n".format(ctx["grid"]))
     lines.append("Pipeline: dose dump → align to `tissue_labels.nii.gz` grid → "
                  "resample HO (nilearn, nearest-neighbour) → "
-                 "`compute_regional_dose`.\n")
+                 "`compute_regional_dose_mc`. Each region mean carries its Monte "
+                 "Carlo statistical uncertainty (± 1σ, from the per-voxel Sum(x²)/N "
+                 "in the dump); `spatial std` is the separate biological spread "
+                 "across the region's voxels.\n")
     for tag, title in (("cort", "Cortical (Harvard-Oxford cortical)"),
                        ("sub", "Subcortical / deep gray (Harvard-Oxford subcortical)")):
         g = ctx["guards"][tag]
@@ -134,21 +138,27 @@ def write_markdown(path, ctx):
         lines.append("Alignment guard: brain mean {:.3e} Gy vs air {:.3e} Gy "
                      "({:.1f}× ), {:.1%} of atlas voxels inside the brain mask.\n".format(
                          g["mean_brain"], g["mean_air"], g["ratio"], g["frac_inside"]))
-        lines.append("{} regions scored. Top by mean dose:\n".format(len(df)))
-        lines.append("| region | mean (Gy) | std (Gy) | max (Gy) | n_vox |")
-        lines.append("|---|---:|---:|---:|---:|")
+        lines.append("{} regions scored. Top by mean dose "
+                     "(mean ± MC stat. σ):\n".format(len(df)))
+        lines.append("| region | mean (Gy) | MC σ (Gy) | MC rel σ | spatial std (Gy) | max (Gy) | n_vox |")
+        lines.append("|---|---:|---:|---:|---:|---:|---:|")
         for _, r in df.head(12).iterrows():
             std = "" if not np.isfinite(r["std_dose_Gy"]) else "{:.2e}".format(r["std_dose_Gy"])
-            lines.append("| {} | {:.2e} | {} | {:.2e} | {} |".format(
-                r["region_name"] or r["region_label"], r["mean_dose_Gy"], std,
-                r["max_dose_Gy"], int(r["n_voxels"])))
+            rel = "" if not np.isfinite(r["mc_rel_unc"]) else "{:.1%}".format(r["mc_rel_unc"])
+            lines.append("| {} | {:.2e} | {:.2e} | {} | {} | {:.2e} | {} |".format(
+                r["region_name"] or r["region_label"], r["mean_dose_Gy"],
+                r["mc_unc_Gy"], rel, std, r["max_dose_Gy"], int(r["n_voxels"])))
     lines.append("\n## Caveats\n")
     lines.append("- **Template mismatch**: phantom is ICBM152 2009c "
                  "(MNI152NLin2009c); Harvard-Oxford is FSL MNI152 (MNI152NLin6). "
                  "Aligned by world affine (~1-2 mm residual). Population-level, not "
                  "patient-specific.")
     lines.append("- **Resolution**: 3 mm phantom voxels; small nuclei are a few "
-                 "voxels. `std` is NaN for single-voxel regions (sample std).")
+                 "voxels. `spatial std` is NaN for single-voxel regions.")
+    lines.append("- **MC σ vs spatial std**: `MC σ` is the statistical error on the "
+                 "region-mean dose (shrinks as 1/√histories); `spatial std` is the "
+                 "biological dose spread across the region (does not). They are "
+                 "distinct — do not read `spatial std` as an error bar.")
     lines.append("- **Dose model**: relative regional dose from the 6 MeV run; "
                  "absolute Gy is per simulated primary, not calibrated MU.")
     lines.append("- Generic subcortical envelopes (cerebral WM/cortex, ventricles) "
@@ -167,7 +177,7 @@ def main(argv=None):
     os.makedirs(args.out_dir, exist_ok=True)
     ref_img, ref_labels = load_reference_grid(args.ref_nii)
     ref_shape = ref_labels.shape
-    dose = load_dose_aligned(args.dose, ref_shape)
+    dump = load_dose_aligned(args.dose, ref_shape)
     brain_mask = ref_labels > 0
     print("reference grid {} | brain voxels {}".format(ref_shape, int(brain_mask.sum())))
 
@@ -175,8 +185,8 @@ def main(argv=None):
     for which in ("cort", "sub"):
         print("--- Harvard-Oxford {} (thr {}) ---".format(which, args.thr))
         atlas_arr, names = fetch_ho(which, args.thr, ref_img)
-        guards[which] = alignment_guard(dose, brain_mask, atlas_arr, which)
-        df = region_table(dose, atlas_arr, names)
+        guards[which] = alignment_guard(dump.dose, brain_mask, atlas_arr, which)
+        df = region_table(dump, atlas_arr, names)
         tables[which] = df
         csv_path = os.path.join(args.out_dir, "regional_dose_{}.csv".format(which))
         df.to_csv(csv_path, index=False)
