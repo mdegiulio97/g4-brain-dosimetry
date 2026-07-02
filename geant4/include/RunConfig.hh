@@ -28,6 +28,13 @@ public:
   // Full phantom side lengths (cm). Default 30x30x30 water cube.
   G4ThreeVector phantomSizeCm = G4ThreeVector(30., 30., 30.);
 
+  // Optional world half-extent along z (cm). <=0 keeps the auto value
+  // (phantom half-z + margin). Set it large (e.g. 120) to fit a DIVERGENT
+  // point source placed far upstream (SSD 100 -> source at z ~ -115 cm), so the
+  // beam divergence and inverse-square fall-off are MODELLED, not applied
+  // post-hoc. Only the -z air gap grows; lateral extents are unchanged.
+  G4double worldHalfZcm = -1.;
+
   // EM physics: "option4" (default), "option3", "livermore", "penelope".
   // Livermore/Penelope are recommended at kV energies.
   G4String emPhysics = "option4";

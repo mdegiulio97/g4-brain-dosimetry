@@ -1,0 +1,20 @@
+# Run config for the Stage-1 water PDD benchmark with a MODELLED divergent beam.
+# Same as run.config.benchmark, but enlarges the world along z so a divergent
+# point source at SSD 100 cm (source at z ~ -115 cm) sits INSIDE the world. The
+# beam divergence and 1/r^2 fall-off are then produced by the transport, not by
+# a post-hoc inverse-square correction in Python.
+# Use with geant4/macros/benchmark_mohan6_divergent.generated.mac and score the
+# gamma gate with:  python scripts/gamma_clinical_bjr25.py --no-isf ...
+# Format: "key = value", '#' starts a comment.
+
+geometry = water_box
+
+# EM physics: option4 (MV reference) | option3 | livermore | penelope (kV).
+em_physics = option4
+
+# Range production cut (mm).
+production_cut_mm = 0.1
+
+# Enlarge the world -z/+z half-extent (cm) to contain the upstream point source.
+# Source at z = surface(-15) - SSD(100) = -115 cm; 120 leaves a 5 cm air margin.
+world_half_z_cm = 120

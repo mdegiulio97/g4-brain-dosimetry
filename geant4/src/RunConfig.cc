@@ -54,6 +54,7 @@ RunConfig RunConfig::Load() {
     else if (key == "tissue_labels_mha") cfg.tissueLabelsMha = val;
     else if (key == "material_map_csv") cfg.materialMapCsv = val;
     else if (key == "phantom_size_cm") cfg.phantomSizeCm = parseVec(val, cfg.phantomSizeCm);
+    else if (key == "world_half_z_cm") cfg.worldHalfZcm = std::stod(val);
     else if (key == "em_physics") cfg.emPhysics = val;
     else if (key == "production_cut_mm") cfg.productionCutMm = std::stod(val);
     else if (key == "insert_material") cfg.insertMaterial = val;

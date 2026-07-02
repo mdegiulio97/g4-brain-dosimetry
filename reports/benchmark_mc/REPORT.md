@@ -129,6 +129,36 @@ The gate is statistics-limited, not physics-limited: 20M primaries clears γ(2%/
 definitive result, swap in the exact BJR-25 book table (only landmarks are openly
 cited) and/or model beam divergence directly instead of the post-hoc ISF.
 
+## beam divergence MODELLED (post-hoc ISF removed), 2026-07-02
+
+The post-hoc inverse-square "asterisk" above is now closed: the divergence is
+produced by the transport itself. A GPS **point source at SSD 100 cm** (source at
+z ≈ −115 cm, inside an enlarged world via `world_half_z_cm = 120`) emits an `iso`
+cone whose half-angle `atan(5/100)=2.86°` reproduces the 10 cm field at the water
+surface. Both the field divergence and the 1/r² fall-off are thus physical, not
+applied afterward.
+
+- Config: `geant4/run.config.benchmark.divergent`; macro
+  `geant4/macros/benchmark_mohan6_divergent.generated.mac` (Mohan6 cited spectrum,
+  20M primaries). Generated with `egsnrc_spectrum_to_macro.py --divergent`.
+- Gate: `scripts/gamma_clinical_bjr25.py --no-isf` (skips the post-hoc ISF so
+  divergence is not double-counted).
+
+| beam model | γ(2%/2mm) over [dmax,25 cm] | γ mean / max | result |
+|---|---|---|---|
+| parallel + post-hoc ISF (20M) | 95.7 % | 0.62 / 1.16 | PASS |
+| **divergent point source, modelled (20M)** | **100.0 %** | **0.42 / 0.76** | **PASS** |
+| sanity: ISF applied on the already-divergent dump | 6.8 % | 4.54 / 5.93 | FAIL (double-counts divergence — expected) |
+
+Modelling the divergence not only removes the methodological caveat, it **improves**
+the agreement (100 % vs 95.7 %, γ mean 0.42 vs 0.62). dmax 1.45 cm; D10 ≈ 68.8 %
+vs cited BJR-25 66.8 %, straight from the transport. The sanity row confirms the
+`--no-isf` and post-hoc-ISF paths are mutually exclusive by construction.
+
+Remaining caveat: the field is a circular `iso` cone (~ the 10×10 square field for
+central-axis PDD); the BJR-25 reference is still cited-anchor-reconstructed (the full
+book table is copyright).
+
 ## Caveats / next
 
 - The per-bin curve is noisy (1×1 cm scoring column = a single lateral voxel; e.g. a
