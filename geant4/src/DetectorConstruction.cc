@@ -10,6 +10,7 @@
 // geometry is built, so dose is scored per mesh voxel regardless.
 #include "DetectorConstruction.hh"
 
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -49,7 +50,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
     hz = 0.5 * fCfg.phantomSizeCm.z() * cm;
   }
 
-  auto* worldBox = new G4Box("world", hx + margin, hy + margin, hz + margin);
+  // World half-extents: auto (phantom + margin), but allow an enlarged -z/+z
+  // extent so a DIVERGENT point source at SSD ~100 cm (z ~ -115) sits inside
+  // the world. Only z grows; lateral margins are untouched.
+  G4double whx = hx + margin, why = hy + margin, whz = hz + margin;
+  if (fCfg.worldHalfZcm > 0.)
+    whz = std::max(whz, fCfg.worldHalfZcm * cm);
+
+  auto* worldBox = new G4Box("world", whx, why, whz);
   auto* worldLV = new G4LogicalVolume(worldBox, air, "world");
   worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
   auto* worldPV = new G4PVPlacement(nullptr, {}, worldLV, "world",

@@ -55,6 +55,9 @@ def main(argv=None):
     ap.add_argument("--range-cm", type=float, default=25.0)
     ap.add_argument("--threshold", type=float, default=0.95)
     ap.add_argument("--smooth", type=int, default=5)
+    ap.add_argument("--no-isf", action="store_true",
+                    help="beam already divergent (SSD modelled): skip post-hoc "
+                         "inverse-square so divergence is not double-counted")
     args = ap.parse_args(argv)
 
     dose, shape = read_score_dump(args.mc_dump)
@@ -63,9 +66,12 @@ def main(argv=None):
         pdd = np.convolve(pdd, np.ones(args.smooth) / args.smooth, mode="same")
     depth = (np.arange(shape[2]) + 0.5) * DZ
     dmax = depth[int(np.argmax(pdd))]
-    isf = ((SSD_CM + dmax) / (SSD_CM + depth)) ** 2
-    clin = pdd * isf
-    clin = clin / clin.max()
+    if args.no_isf:
+        clin = pdd / pdd.max()
+    else:
+        isf = ((SSD_CM + dmax) / (SSD_CM + depth)) ** 2
+        clin = pdd * isf
+        clin = clin / clin.max()
 
     ref_d, ref_D = load_reference(args.reference)
 
@@ -77,7 +83,10 @@ def main(argv=None):
 
     print("Clinical 6 MV gamma({:.0f}%/{:.0f}mm) over [{:.2f}, {:.1f}] cm".format(
         args.dose_tol * 100, args.dta_mm, dmax, args.range_cm))
-    print("  MC: Mohan6 cited spectrum + inverse-square (SSD {:.0f})".format(SSD_CM))
+    print("  MC: Mohan6 cited spectrum, {}".format(
+        "divergent point source (SSD {:.0f}, modelled)".format(SSD_CM)
+        if args.no_isf else
+        "parallel beam + post-hoc inverse-square (SSD {:.0f})".format(SSD_CM)))
     print("  reference points: {}".format(int(mask.sum())))
     print("  pass rate       : {:.1%}  (threshold {:.0%})".format(
         pass_rate, args.threshold))
