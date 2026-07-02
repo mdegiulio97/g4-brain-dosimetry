@@ -26,6 +26,7 @@ reports/phantom_mc/*.txt
 reports/mni152_mc/*.txt
 reports/mni152_mc/*.log
 
+
 # binary / Monte Carlo outputs
 *.root
 *.raw
