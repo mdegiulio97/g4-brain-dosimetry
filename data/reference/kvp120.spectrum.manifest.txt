@@ -1,0 +1,11 @@
+kVp spectrum provenance
+=======================
+generator      : scripts/make_kvp_spectrum.py
+toolkit        : SpekPy v2.0 (Poludniowski et al., Med Phys 48(7):3630-3637, 2021, DOI 10.1002/mp.14945)
+tube potential : 120 kVp
+anode angle    : 12 deg (tungsten)
+inherent filter: 2.5 mm Al
+bin width       : 1 keV
+mean energy     : 54.447 keV
+1st HVL (Al)    : 4.220 mm
+spectrum file   : data/reference/kvp120.spectrum
