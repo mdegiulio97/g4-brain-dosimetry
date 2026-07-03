@@ -31,18 +31,33 @@ const std::map<G4String, Tissue>& brainTissues() {
   return t;
 }
 
-G4Material* buildBrainTissue(const G4String& id) {
-  const auto it = brainTissues().find(id);
-  if (it == brainTissues().end()) return nullptr;
+G4Material* buildComposed(const G4String& name, const Tissue& ts) {
   auto* nist = G4NistManager::Instance();
-  const Tissue& ts = it->second;
-  auto* mat = new G4Material("BAD_" + id, ts.density_gcm3 * (g / cm3),
+  auto* mat = new G4Material(name, ts.density_gcm3 * (g / cm3),
                              static_cast<G4int>(ts.massFracPct.size()));
   for (const auto& ef : ts.massFracPct) {
     G4Element* el = nist->FindOrBuildElement(ef.first);
     mat->AddElement(el, ef.second / 100.0);
   }
   return mat;
+}
+
+G4Material* buildBrainTissue(const G4String& id) {
+  const auto it = brainTissues().find(id);
+  if (it == brainTissues().end()) return nullptr;
+  return buildComposed("BAD_" + id, it->second);
+}
+
+// Hydroxyapatite Ca10(PO4)6(OH)2 -- the realistic mineral of dystrophic/
+// physiological brain calcification (an alternative to the G4_BONE_CORTICAL_ICRP
+// proxy). Mass fractions from the stoichiometric
+// molar mass 1004.61 g/mol (Ca 39.894, P 18.499, O 41.406, H 0.201 %; sum 100).
+// Default density 3.16 g/cm3 = crystalline HAp (upper bound); lower densities
+// are set via the density override in Get().
+G4Material* buildHydroxyapatite() {
+  static const Tissue hap = {3.16, {{"Ca", 39.894}, {"P", 18.499},
+                                    {"O", 41.406}, {"H", 0.201}}};
+  return buildComposed("BAD_HYDROXYAPATITE", hap);
 }
 
 // FE_LOADED:<mg_per_g> -> water + dilute elemental iron at the given loading.
@@ -82,6 +97,8 @@ G4Material* MaterialFactory::Get(const G4String& rawId, G4double densityOverride
 
   if (id.rfind("FE_LOADED:", 0) == 0) {
     base = buildIronLoaded(id);
+  } else if (id == "HYDROXYAPATITE") {
+    base = buildHydroxyapatite();
   } else if (brainTissues().count(id)) {
     base = buildBrainTissue(id);
   } else {

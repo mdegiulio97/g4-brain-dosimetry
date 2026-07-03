@@ -41,6 +41,9 @@ PRESETS = {
                  desc="Air cavity insert"),
     "calc": dict(material="G4_BONE_CORTICAL_ICRP", density=1.850,
                  desc="Calcification insert; ICRU-44 cortical bone proxy"),
+    "hap":  dict(material="HYDROXYAPATITE", density=2.2,
+                 desc="Calcification insert; hydroxyapatite Ca10(PO4)6(OH)2, "
+                      "rho=2.2 g/cm3"),
 }
 PARENCHYMA_DEFAULT = (2, 3)  # GM, WM
 
