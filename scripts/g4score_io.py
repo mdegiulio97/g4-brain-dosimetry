@@ -50,8 +50,12 @@ def _parse_rows(path):
                 continue
             q = float(parts[4]) if len(parts) > 4 else float("nan")
             nn = int(float(parts[5])) if len(parts) > 5 else -1
-            idx_i.append(i); idx_j.append(j); idx_k.append(k)
-            vals.append(v); sqs.append(q); ns.append(nn)
+            idx_i.append(i)
+            idx_j.append(j)
+            idx_k.append(k)
+            vals.append(v)
+            sqs.append(q)
+            ns.append(nn)
     if not vals:
         raise ValueError("no data rows parsed from {}".format(path))
     return idx_i, idx_j, idx_k, vals, sqs, ns

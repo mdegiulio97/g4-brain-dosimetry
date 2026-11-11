@@ -1,121 +1,68 @@
-# G4BrainAtlasDose
+# g4-brain-dosimetry
 
-Monte Carlo brain dosimetry on MRI-derived phantoms with atlas-based regional reporting.
+Monte Carlo photon dosimetry on MRI-derived brain phantoms with Geant4, with dose reported by atlas region.
 
-## Scientific scope
+The repository contains a small Geant4 application (C++) and a Python layer around it:
 
-G4BrainAtlasDose is a research software project for Geant4-based Monte Carlo dose simulation on MRI-derived brain phantoms.
+- **Geant4 core** (`geant4/`): water-box and voxelised-phantom geometries, a material factory (NIST materials, Woodard & White brain tissues, mixtures with a density override), selectable electromagnetic physics (`option4`, `option3`, Livermore, Penelope) and command-based dose scoring.
+- **Phantom building** (`scripts/`): MNI152 tissue labels → MetaImage (`.mha`, X-fastest voxel order) + material map → voxel phantom; tooling to place a heterogeneity insert inside the anatomy.
+- **Sources**: monoenergetic beams, a cited 6 MV spectrum, a parallel or divergent (SSD point source) field, and a 120 kVp spectrum generated with SpekPy.
+- **Analytics** (`python/g4brainatlasdose/`): dose-map I/O, Monte Carlo statistical uncertainty per voxel and per region, regional dose aggregation on the Harvard-Oxford atlas, QC reports and run manifests with reproducibility metadata.
 
-The initial MVP focuses on:
+Extracted from a private research repository; results under preparation are not included.
 
-- static MNI152 or BrainWeb-like brain phantom;
-- simplified tissue/material assignment;
-- voxel-wise dose scoring with Geant4;
-- export of dose maps;
-- Harvard-Oxford atlas-based regional dose reporting.
+## Validation: 6 MV water depth dose
 
-## Non-goals
+The physics was checked in a 30 cm water cube before any phantom run (`reports/benchmark_mc/REPORT.md`):
 
-This repository is not a clinical treatment planning system.
+- **Cross-physics check**: the same 6 MeV benchmark with three independent electromagnetic models (option4, Livermore, Penelope) gives consistent depth-dose curves.
+- **Clinical 6 MV beam**: a cited 6 MV spectrum (Mohan et al.) with a modelled divergent point source at SSD 100 cm, 20 million primaries, compared with BJR Supplement 25 depth-dose data: gamma (2%/2 mm) pass rate 100% over [dmax, 25 cm], mean gamma 0.42.
 
-It does not compute dose directly from raw MRI intensities. MRI-derived anatomy is used as anatomical support, while tissue classes and material maps are explicit modeling assumptions.
-
-## Planned MVP
-
-1. Prepare anatomical phantom and tissue labels.
-2. Convert tissue labels into a material map.
-3. Build voxelized Geant4 geometry.
-4. Run a simple photon beam simulation.
-5. Export dose map.
-6. Aggregate dose by atlas regions.
-7. Generate QC report and run manifest.
-
-## MVP-1 Python Analytics
-
-The first Python MVP provides pure analytics utilities to aggregate a dose map by
-atlas labels and write a regional CSV report. It accepts optional atlas region names
-as a `label -> region_name` mapping, can generate a deterministic synthetic dummy
-dose map for smoke runs, and can write a minimal markdown QC report. It is
-demonstrated with small synthetic arrays in the test suite and does not require
-real MRI or Geant4 output data.
-
-The expected report filename is `regional_dose.csv` with columns:
-`region_label`, `region_name`, `mean_dose_Gy`, `std_dose_Gy`, `max_dose_Gy`, `n_voxels`.
-The `_Gy` suffix marks the dose unit (Gray) for future Geant4 runs; the MVP-1
-dummy dose populates these columns with dimensionless synthetic values for
-pipeline validation only.
-
-## MVP-1 demo
-
-Run the deterministic Python-only validation demo from the repository root:
-
-```bash
-python scripts/run_mvp1_demo.py
-```
-
-The demo writes `regional_dose.csv`, `qc_report.md`, and `run_manifest.yaml`
-under `reports/mvp1_demo/`. It uses a synthetic atlas and dummy dose map, records
-the seed and package version when available, and does not invoke Geant4.
-
-The MVP-1.5 CLI can run the NIfTI-to-regional-CSV pipeline with default local
-paths:
-
-```bash
-g4brainatlasdose-mvp \
-  --dose-map dose_map.nii.gz \
-  --atlas-labels atlas_labels.nii.gz \
-  --output regional_dose.csv \
-  --region-names region_names.csv
-```
-
-For a synthetic smoke run without Geant4 dose output, use `--dummy-dose`. Add
-`--dummy-dose-output` only when you also want the generated dummy dose map written
-as NIfTI:
-
-```bash
-g4brainatlasdose-mvp \
-  --atlas-labels atlas_labels.nii.gz \
-  --dummy-dose \
-  --dummy-dose-output outputs/dummy_dose.nii.gz \
-  --output reports/regional_dose.csv \
-  --qc-report reports/qc_report.md
-```
-
-## Documentation
-
-Methodology, contracts, and roadmap live under [`docs/`](docs/):
-
-- [`PROJECT_SCOPE.md`](docs/PROJECT_SCOPE.md) — perimeter (no clinical TPS, MRI is anatomical support only).
-- [`SCIENTIFIC_RATIONALE_AND_ROADMAP.md`](docs/SCIENTIFIC_RATIONALE_AND_ROADMAP.md) — scientific rationale and full roadmap.
-- [`TECHNICAL_DESIGN.md`](docs/TECHNICAL_DESIGN.md) — repository contracts and MVP boundaries.
-- [`MVP_ROADMAP_CHECKLIST.md`](docs/MVP_ROADMAP_CHECKLIST.md) — MVP-0/1/2 milestones.
-- [`MVP1_VALIDATION_PROTOCOL.md`](docs/MVP1_VALIDATION_PROTOCOL.md) — MVP-1 deterministic Python-only validation.
-- [`PRE_MVP2_AUDIT_AND_ACTION_PLAN.md`](docs/PRE_MVP2_AUDIT_AND_ACTION_PLAN.md) — audit before MVP-2 with prioritized fix list.
-- [`STEP_FUTURI.md`](docs/STEP_FUTURI.md) — Fase C operational plan (Docker + Geant4 skeleton + benchmark).
-- [`MATERIAL_MAP_SCHEMA.md`](docs/MATERIAL_MAP_SCHEMA.md) — `material_map.csv` schema.
-- [`ATLAS_LABELS_SCHEMA.md`](docs/ATLAS_LABELS_SCHEMA.md) — `atlas_labels.csv` and 3D label-image schema.
-
-Phase-B methodology (frozen scientific decisions for MVP-2):
-
-- [`MATERIAL_ASSIGNMENT_METHODOLOGY.md`](docs/MATERIAL_ASSIGNMENT_METHODOLOGY.md) — bulk look-up vs sCT, ICRU-44 / Woodard & White densities and compositions for the five tissue classes (`configs/examples/material_map.brain.csv`).
-- [`PHYSICS_LIST_AND_CONVERGENCE.md`](docs/PHYSICS_LIST_AND_CONVERGENCE.md) — Geant4 EM physics constructor, range cuts, voxel scorer, primaries target, water-phantom acceptance.
-- [`HARVARD_OXFORD_SETUP.md`](docs/HARVARD_OXFORD_SETUP.md) — FSL Harvard-Oxford download/parse procedure (`scripts/build_atlas_labels.py`).
-- [`CPP_PYTHON_INTERFACE.md`](docs/CPP_PYTHON_INTERFACE.md) — on-disk contract between the Geant4 core and the Python analytics, with smoke test in `tests/test_dose_artefact.py`.
+The BJR-25 reference curve is reconstructed from published landmark values, because the full table is not openly available. The comparison is a consistency check of the transport and the beam model, not a commissioning measurement.
 
 ## Repository layout
 
-```text
-docs/       Scientific notes, design contracts, methodology
-scripts/    Utility scripts and CLI entry points
-python/     Python package for preprocessing and postprocessing
-geant4/     C++ Geant4 simulation core
-configs/    YAML/JSON configuration files
-manifests/  Small run manifests and reproducibility metadata examples
-tests/      Unit and smoke tests
-data/       Local data folders, mostly ignored by git
-outputs/    Simulation outputs, ignored by git
-reports/    Generated reports, mostly ignored by git
+```
+geant4/          C++ application: geometry, materials, physics list, sources, run configs and macros
+python/          g4brainatlasdose package: dose I/O, MC uncertainty, regional analytics, QC, CLI
+scripts/         phantom building, spectra, benchmark analysis, regional report, Geant4 setup/run helpers
+configs/         example atlas-label and material-map files
+data/reference/  6 MV and 120 kVp spectra, BJR-25 reference landmarks (with provenance)
+docs/            interface contract, material assignment, physics list, atlas setup, voxel phantom
+reports/benchmark_mc/  water depth-dose benchmark
+tests/           unit tests for the Python layer (no Geant4 needed)
 ```
 
-Some local data, output, and report directories are intentionally absent from a fresh
-checkout because large artifacts should not be tracked in git.
+## Build and run (Geant4)
+
+Geant4 11.2 from conda-forge, built in WSL Ubuntu or Linux, without root and without Docker:
+
+```bash
+bash scripts/setup_geant4_conda.sh               # micromamba env with Geant4 11.2 + compiler, then build
+bash scripts/setup_geant4_conda.sh --benchmark   # also run the water depth-dose benchmark
+
+# run any macro with a run config
+G4BAD_RUNCONFIG=geant4/run.config.benchmark G4BAD_NPRIM=2000000 \
+  bash scripts/run_g4.sh geant4/macros/benchmark_water.mac
+```
+
+A `docker/Dockerfile` is provided as an alternative. Monte Carlo dose dumps are regenerable and not committed.
+
+## Python layer
+
+```bash
+python -m venv .venv && . .venv/bin/activate      # or: uv venv
+pip install -e ".[dev,viz,geant4-prep]"
+pytest -q                                          # unit tests, no Geant4 needed
+ruff check .
+g4brainatlasdose-mvp --help                        # regional-dose CLI
+```
+
+## Data and licenses
+
+- MNI152 ICBM 2009c tissue priors and the Harvard-Oxford atlas are downloaded at run time (via nilearn) and are subject to their own licences; they are not redistributed here.
+- Spectra and reference landmarks in `data/reference/` carry their provenance and citations in the accompanying files.
+
+## License
+
+Code: MIT (see `LICENSE`).

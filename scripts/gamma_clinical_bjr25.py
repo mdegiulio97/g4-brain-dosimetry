@@ -32,8 +32,10 @@ def load_reference(path):
             if not ln or ln.startswith("#") or ln.lower().startswith("depth"):
                 continue
             a, b = ln.split(",")[:2]
-            d.append(float(a)); p.append(float(b))
-    d = np.array(d); p = np.array(p)
+            d.append(float(a))
+            p.append(float(b))
+    d = np.array(d)
+    p = np.array(p)
     return d, p / p.max()
 
 

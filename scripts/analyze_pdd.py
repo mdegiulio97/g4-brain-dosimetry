@@ -1,6 +1,6 @@
 """Water-phantom PDD benchmark: 1-D gamma(2%/2mm) of MC vs reference.
 
-The Stage-1 gate (docs/STADIO1_GEANT4_CORE.md): the Monte Carlo central-axis
+The water benchmark gate (reports/benchmark_mc/REPORT.md): the Monte Carlo central-axis
 percent depth dose must agree with an independent reference within
 gamma(2%/2mm) >= 95% over [dmax, 25 cm]. This script computes that pass rate.
 

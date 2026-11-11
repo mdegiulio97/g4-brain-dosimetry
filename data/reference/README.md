@@ -1,6 +1,6 @@
 # Reference PDD data for the water-phantom benchmark
 
-The Stage-1 gate (`docs/STADIO1_GEANT4_CORE.md`) requires the Monte Carlo central-
+The water benchmark (see `reports/benchmark_mc/REPORT.md`) requires the Monte Carlo central-
 axis percent depth dose (PDD) to agree with an **independent reference** within
 gamma(2 %/2 mm) ≥ 95 % over `[dmax, 25 cm]`. This folder holds that reference.
 

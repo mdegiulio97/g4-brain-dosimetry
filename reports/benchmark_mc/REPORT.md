@@ -166,4 +166,4 @@ book table is copyright).
   or raise N so the point-wise gamma is statistics-limited, not noise-limited.
 - This consistency check is **not** a substitute for a cited reference PDD. Decide
   the official reference: (A) an independent mono-6 MeV table, or (B) switch to a
-  realistic 6 MV spectrum + clinical 6 MV PDD. See `docs/STADIO1_GEANT4_CORE.md`.
+  realistic 6 MV spectrum + clinical 6 MV PDD.

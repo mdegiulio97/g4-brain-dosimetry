@@ -75,7 +75,7 @@ def main(argv=None):
         fh.write("2,G4_GRAY_MATTER,1.045,Gray matter; Woodard and White 1986\n")
         fh.write("3,G4_WHITE_MATTER,1.041,White matter; Woodard and White 1986\n")
 
-    counts = {int(l): int((labels == l).sum()) for l in np.unique(labels)}
+    counts = {int(lab): int((labels == lab).sum()) for lab in np.unique(labels)}
     print("downsampled grid {}, spacing {} mm".format(
         labels.shape, np.round(np.abs(np.diag(new_affine))[:3], 2)))
     print("label voxel counts:", counts)

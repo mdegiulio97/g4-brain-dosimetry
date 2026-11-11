@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package (Python layer only; Geant4 is not needed for the tests)
+        run: pip install -e ".[dev,viz,geant4-prep]"
+
+      - name: Ruff lint
+        run: ruff check .
+
+      - name: Run tests
+        run: pytest -q

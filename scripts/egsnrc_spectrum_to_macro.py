@@ -22,7 +22,6 @@ import numpy as np
 
 
 def parse_egsnrc_spectrum(path):
-    rows = []
     with open(path) as f:
         lines = [ln.strip() for ln in f if ln.strip()]
     title = lines[0]
