@@ -1,5 +1,7 @@
 # g4-brain-dosimetry
 
+[![CI](https://github.com/mdegiulio97/g4-brain-dosimetry/actions/workflows/ci.yml/badge.svg)](https://github.com/mdegiulio97/g4-brain-dosimetry/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Monte Carlo photon dosimetry on MRI-derived brain phantoms with Geant4, with dose reported by atlas region.
 
 The repository contains a small Geant4 application (C++) and a Python layer around it:
